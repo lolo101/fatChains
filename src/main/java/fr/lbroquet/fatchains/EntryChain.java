@@ -1,37 +1,38 @@
 package fr.lbroquet.fatchains;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.Iterator;
 import java.util.SortedMap;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
-class EntryChain {
+public class EntryChain implements Iterable<FatEntry> {
 
-    private final Deque<FatEntry> queue = new ArrayDeque<>();
+    private int next;
+    private final SortedMap<Integer, FatEntry> entries;
 
-    EntryChain(int head, SortedMap<Integer, FatEntry> allocateds) {
-        for (FatEntry entry = allocateds.get(head); entry != null; entry = allocateds.get(entry.getNextEntryIndex())) {
-            queue.addLast(entry);
-        }
+    EntryChain(int head, SortedMap<Integer, FatEntry> entries) {
+        this.next = head;
+        this.entries = entries;
     }
 
-    public int size() {
-        return queue.size();
-    }
-
-    public int firstIndex() {
-        return queue.getFirst().getIndex();
-    }
-
-    public boolean isFinished() {
-        return queue.getLast().isLastOfChain();
+    public Stream<FatEntry> stream() {
+        return StreamSupport.stream(spliterator(), false);
     }
 
     @Override
-    public String toString() {
-        return String.format("%08x .. %08x (-> %08x)\tsize: %dkB",
-                firstIndex(),
-                queue.getLast().getIndex(),
-                queue.getLast().getNextEntryIndex(),
-                queue.size() * 128);
+    public Iterator<FatEntry> iterator() {
+        return new Iterator<FatEntry>() {
+            @Override
+            public boolean hasNext() {
+                return entries.containsKey(next);
+            }
+
+            @Override
+            public FatEntry next() {
+                FatEntry current = entries.get(next);
+                next = current.getNextEntryIndex();
+                return current;
+            }
+        };
     }
 }

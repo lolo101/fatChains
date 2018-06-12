@@ -1,6 +1,6 @@
 package fr.lbroquet.fatchains;
 
-class FatEntry implements Comparable<FatEntry> {
+public class FatEntry implements Comparable<FatEntry> {
 
     public static final int END_OF_CHAIN = 0xffffffff;
     private final int index;

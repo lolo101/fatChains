@@ -3,6 +3,7 @@ package fr.lbroquet.fatchains;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -10,10 +11,10 @@ import org.junit.Test;
 public class MainTest {
 
     @Test(expected = IOException.class)
-    @Ignore("Loops not detected anymore")
-    public void should_throw_on_loop() throws Exception {
+    public void should_ignore_loop() throws Exception {
         InputStream fat = MainTest.class.getResourceAsStream("/loop.bin");
-        Main.findChains(fat);
+        Collection<EntryChain> chains = Main.findChains(fat);
+        Assert.assertTrue(chains.isEmpty());
     }
 
     @Test(expected = IOException.class)
@@ -35,7 +36,7 @@ public class MainTest {
         InputStream fat = MainTest.class.getResourceAsStream("/unordered_singlechain2.bin");
         Collection<EntryChain> chains = Main.findChains(fat);
         EntryChain chain = chains.iterator().next();
-        Assert.assertEquals(4, chain.size());
+        Assert.assertEquals(4, chain.stream().count());
     }
 
     @Test

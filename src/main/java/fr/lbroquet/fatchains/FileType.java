@@ -5,9 +5,13 @@ import java.io.InputStream;
 
 public class FileType {
 
-    public static String guessClusterType(EntryChain chain, InputStream device) throws IOException {
-        int clusterOffset = 61440 + (chain.firstIndex() - 2) * 256;
-        device.skip(clusterOffset * 512);
+    private static final int HEAP_OFFSET_IN_SECTORS = 61440;
+	private static final int SECTORS_PER_CLUSTER = 256;
+    private static final int BYTES_PER_SECTOR = 512;
+
+    public static String guessClusterType(int headIndex, InputStream device) throws IOException {
+        int clusterOffset = HEAP_OFFSET_IN_SECTORS + (headIndex - 2) * SECTORS_PER_CLUSTER;
+        device.skip(clusterOffset * BYTES_PER_SECTOR);
 
         byte[] begining = new byte[32];
         device.read(begining);
