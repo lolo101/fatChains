@@ -2,14 +2,16 @@ package fr.lbroquet.fatchains;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.SortedMap;
 
 class EntryChain {
 
     private final Deque<FatEntry> queue = new ArrayDeque<>();
 
-    public EntryChain append(FatEntry entry) {
-        queue.addLast(entry);
-        return this;
+    EntryChain(int head, SortedMap<Integer, FatEntry> allocateds) {
+        for (FatEntry entry = allocateds.get(head); entry != null; entry = allocateds.get(entry.getNextEntryIndex())) {
+            queue.addLast(entry);
+        }
     }
 
     public int size() {

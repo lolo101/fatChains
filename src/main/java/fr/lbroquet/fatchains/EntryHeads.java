@@ -2,7 +2,6 @@ package fr.lbroquet.fatchains;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -28,12 +27,6 @@ class EntryHeads {
         Collection<Integer> heads = new ArrayList<>(allocateds.keySet());
         heads.removeAll(pointedAt.keySet());
 
-        return heads.stream().map(h -> buildChain(new EntryChain(), h)).collect(Collectors.toList());
-    }
-
-    private EntryChain buildChain(EntryChain chain, int index) {
-        Optional<FatEntry> entry = Optional.ofNullable(allocateds.get(index));
-        entry.ifPresent(e -> buildChain(chain.append(e), e.getNextEntryIndex()));
-        return chain;
+        return heads.stream().map(h -> new EntryChain(h, allocateds)).collect(Collectors.toList());
     }
 }
