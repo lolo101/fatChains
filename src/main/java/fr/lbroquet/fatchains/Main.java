@@ -3,17 +3,19 @@ package fr.lbroquet.fatchains;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.RandomAccessFile;
 import java.util.Collection;
 import java.util.stream.StreamSupport;
 
 public class Main {
     public static void main(String... args) throws IOException {
         try (FileInputStream fis = new FileInputStream(args[0])) {
+            RandomAccessFile device = new RandomAccessFile(args[1], "r");
             Collection<EntryChain> heads = findChains(fis);
             System.out.printf("%d chains:%n", heads.size());
             heads.stream()
-                    //.sorted(Comparator.comparingInt(EntryChain::size).reversed())
-                    .forEach(System.out::println);
+                    .map(c -> c.iterator().next())
+                    .forEach(e -> FileType.guessClusterType(e.getIndex(), device));
         }
     }
 

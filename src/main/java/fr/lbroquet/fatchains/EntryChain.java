@@ -7,11 +7,11 @@ import java.util.stream.StreamSupport;
 
 public class EntryChain implements Iterable<FatEntry> {
 
-    private int next;
+    private final int head;
     private final SortedMap<Integer, FatEntry> entries;
 
     EntryChain(int head, SortedMap<Integer, FatEntry> entries) {
-        this.next = head;
+        this.head = head;
         this.entries = entries;
     }
 
@@ -22,6 +22,9 @@ public class EntryChain implements Iterable<FatEntry> {
     @Override
     public Iterator<FatEntry> iterator() {
         return new Iterator<FatEntry>() {
+
+            private int next = head;
+
             @Override
             public boolean hasNext() {
                 return entries.containsKey(next);

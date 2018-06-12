@@ -1,21 +1,25 @@
 package fr.lbroquet.fatchains;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.RandomAccessFile;
 
 public class FileType {
 
     private static final int HEAP_OFFSET_IN_SECTORS = 61440;
-	private static final int SECTORS_PER_CLUSTER = 256;
+    private static final int SECTORS_PER_CLUSTER = 256;
     private static final int BYTES_PER_SECTOR = 512;
 
-    public static String guessClusterType(int headIndex, InputStream device) throws IOException {
-        int clusterOffset = HEAP_OFFSET_IN_SECTORS + (headIndex - 2) * SECTORS_PER_CLUSTER;
-        device.skip(clusterOffset * BYTES_PER_SECTOR);
+    public static String guessClusterType(int headIndex, RandomAccessFile device) {
+        try {
+            long clusterOffset = HEAP_OFFSET_IN_SECTORS + (headIndex - 2) * SECTORS_PER_CLUSTER;
+            device.seek(clusterOffset * BYTES_PER_SECTOR);
 
-        byte[] begining = new byte[32];
-        device.read(begining);
-        return guessType(begining);
+            byte[] begining = new byte[32];
+            device.read(begining);
+            return guessType(begining);
+        } catch (IOException ex) {
+            return ex.toString();
+        }
     }
 
     private static String guessType(byte[] array) {
