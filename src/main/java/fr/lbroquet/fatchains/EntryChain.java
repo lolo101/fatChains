@@ -7,12 +7,9 @@ class EntryChain {
 
     private final Deque<FatEntry> queue = new ArrayDeque<>();
 
-    public void push(FatEntry entry) {
+    public EntryChain append(FatEntry entry) {
         queue.addLast(entry);
-    }
-
-    public void push(EntryChain chain) {
-        queue.addAll(chain.queue);
+        return this;
     }
 
     public int size() {
@@ -21,6 +18,10 @@ class EntryChain {
 
     public int firstIndex() {
         return queue.getFirst().getIndex();
+    }
+
+    public boolean isFinished() {
+        return queue.getLast().isLastOfChain();
     }
 
     @Override
