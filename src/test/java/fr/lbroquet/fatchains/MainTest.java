@@ -10,7 +10,7 @@ import org.junit.Test;
 
 public class MainTest {
 
-    @Test(expected = IOException.class)
+    @Test
     public void should_ignore_loop() throws Exception {
         InputStream fat = MainTest.class.getResourceAsStream("/loop.bin");
         Collection<EntryChain> chains = Main.findChains(fat);
