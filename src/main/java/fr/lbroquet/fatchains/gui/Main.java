@@ -39,6 +39,7 @@ public class Main {
     private void showMainWindow(File path) {
         try {
             WaitingDialog dialog = WaitingDialog.showDialog(gui, path.getName(), "Reading boot sector\nPlease wait...");
+            gui.updateScreen();
             BootSector bootSector = BootSector.from(path.toPath());
             BootSectorPanel bootSectorPanel = new BootSectorPanel();
             bootSectorPanel.init(bootSector);
