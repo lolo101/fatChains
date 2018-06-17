@@ -2,11 +2,12 @@ package fr.lbroquet.fatchains.gui;
 
 import com.googlecode.lanterna.gui2.MultiWindowTextGUI;
 import com.googlecode.lanterna.gui2.Window;
-import com.googlecode.lanterna.gui2.dialogs.TextInputDialogBuilder;
+import com.googlecode.lanterna.gui2.dialogs.FileDialogBuilder;
 import com.googlecode.lanterna.gui2.dialogs.WaitingDialog;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import fr.lbroquet.boot.BootSector;
+import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -31,14 +32,14 @@ public class Main {
     }
 
     private void showUp() {
-        String path = new TextInputDialogBuilder().build().showDialog(gui);
-        Optional.ofNullable(path).ifPresent(this::showBootSectorWindow);
+        File path = new FileDialogBuilder().build().showDialog(gui);
+        Optional.ofNullable(path).ifPresent(this::showMainWindow);
     }
 
-    private void showBootSectorWindow(String path) {
+    private void showMainWindow(File path) {
         try {
-            WaitingDialog dialog = WaitingDialog.showDialog(gui, path, "Reading boot sector\nPlease wait...");
-            BootSector bootSector = BootSector.from(path);
+            WaitingDialog dialog = WaitingDialog.showDialog(gui, path.getName(), "Reading boot sector\nPlease wait...");
+            BootSector bootSector = BootSector.from(path.toPath());
             BootSectorPanel bootSectorPanel = new BootSectorPanel();
             bootSectorPanel.init(bootSector);
             Window window = new MainWindow(bootSectorPanel);
@@ -46,7 +47,7 @@ public class Main {
             gui.addWindow(window);
             gui.waitForWindowToClose(window);
         } catch (IOException ex) {
-            LOG.log(System.Logger.Level.ERROR, path, ex);
+            LOG.log(System.Logger.Level.ERROR, path.getPath(), ex);
         }
     }
 }

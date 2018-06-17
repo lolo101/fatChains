@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import lombok.Value;
 
@@ -32,8 +32,8 @@ public class BootSector {
     final byte driveSelect;
     final byte pctUse;
 
-    public static BootSector from(String path) throws IOException {
-        try (FileChannel channel = FileChannel.open(Paths.get(path), StandardOpenOption.READ)) {
+    public static BootSector from(Path path) throws IOException {
+        try (FileChannel channel = FileChannel.open(path, StandardOpenOption.READ)) {
             ByteBuffer buffer = ByteBuffer.allocate(BYTES_PER_SECTOR);
             buffer.order(ByteOrder.LITTLE_ENDIAN);
             channel.read(buffer);
