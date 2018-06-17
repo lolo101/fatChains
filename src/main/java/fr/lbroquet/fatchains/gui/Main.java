@@ -1,6 +1,7 @@
 package fr.lbroquet.fatchains.gui;
 
 import com.googlecode.lanterna.gui2.MultiWindowTextGUI;
+import com.googlecode.lanterna.gui2.Window;
 import com.googlecode.lanterna.gui2.dialogs.TextInputDialogBuilder;
 import com.googlecode.lanterna.gui2.dialogs.WaitingDialog;
 import com.googlecode.lanterna.screen.Screen;
@@ -18,8 +19,11 @@ public class Main {
     public static void main(String... args) throws IOException {
         Screen screen = new DefaultTerminalFactory().createScreen();
         screen.startScreen();
-        new Main(screen).showUp();
-        screen.stopScreen();
+        try {
+            new Main(screen).showUp();
+        } finally {
+            screen.stopScreen();
+        }
     }
 
     private Main(Screen screen) {
@@ -35,7 +39,9 @@ public class Main {
         try {
             WaitingDialog dialog = WaitingDialog.showDialog(gui, path, "Reading boot sector\nPlease wait...");
             BootSector bootSector = BootSector.from(path);
-            BootSectorWindow window = new BootSectorWindow(bootSector);
+            BootSectorPanel bootSectorPanel = new BootSectorPanel();
+            bootSectorPanel.init(bootSector);
+            Window window = new MainWindow(bootSectorPanel);
             dialog.close();
             gui.addWindow(window);
             gui.waitForWindowToClose(window);

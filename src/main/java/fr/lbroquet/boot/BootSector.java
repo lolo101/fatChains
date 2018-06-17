@@ -2,7 +2,9 @@ package fr.lbroquet.boot;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import lombok.Value;
@@ -33,6 +35,7 @@ public class BootSector {
     public static BootSector from(String path) throws IOException {
         try (FileChannel channel = FileChannel.open(Paths.get(path), StandardOpenOption.READ)) {
             ByteBuffer buffer = ByteBuffer.allocate(BYTES_PER_SECTOR);
+            buffer.order(ByteOrder.LITTLE_ENDIAN);
             channel.read(buffer);
             return new BootSector(buffer.rewind());
         }
@@ -59,6 +62,10 @@ public class BootSector {
         pctUse = buffer.get();
     }
 
+    public String getName() {
+        return new String(name, Charset.forName("ASCII"));
+    }
+
     public int getBytesPerSector() {
         return 1 << bytesPerSectorExposant;
     }
@@ -69,5 +76,9 @@ public class BootSector {
 
     public int getBytesPerCluster() {
         return 1 << (bytesPerSectorExposant + sectorPerClusterExposant);
+    }
+
+    public long getVolumeLengthInBytes() {
+        return volumeLength << bytesPerSectorExposant;
     }
 }
