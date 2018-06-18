@@ -13,8 +13,9 @@ public class BootSectorTest {
 
     public BootSectorTest() throws URISyntaxException, IOException {
         URL boot = BootSectorTest.class.getClassLoader().getResource("boot.bin");
-        Partition partition = new Partition(Paths.get(boot.toURI()));
-        bootSector = partition.getBootSector();
+        try (Partition partition = new Partition(Paths.get(boot.toURI()))) {
+            bootSector = partition.getBootSector();
+        }
     }
 
     @Test

@@ -7,12 +7,13 @@ import com.googlecode.lanterna.gui2.LinearLayout;
 import com.googlecode.lanterna.gui2.Panel;
 import com.googlecode.lanterna.gui2.WindowBasedTextGUI;
 import com.googlecode.lanterna.gui2.dialogs.WaitingDialog;
+import fr.lbroquet.fatchains.FatEntries;
 import fr.lbroquet.fatchains.Partition;
 import java.io.IOException;
 
 class MainWindow extends AbstractWindow {
 
-    private static final System.Logger LOG = System.getLogger(Main.class.getName());
+    private static final System.Logger LOG = System.getLogger(MainWindow.class.getName());
 
     private final Panel mainPanel = new Panel(new LinearLayout(Direction.HORIZONTAL));
     private final Partition partition;
@@ -22,7 +23,7 @@ class MainWindow extends AbstractWindow {
         this.partition = partition;
 
         Panel menuPanel = new Panel();
-        menuPanel.addComponent(new Button("Boot Sector", this::openPartition));
+        menuPanel.addComponent(new Button("Boot Sector", this::scanBootSector));
         menuPanel.addComponent(new Button("FAT", this::scanFat));
 
         mainPanel.addComponent(menuPanel);
@@ -33,7 +34,7 @@ class MainWindow extends AbstractWindow {
         setComponent(panel);
     }
 
-    private void openPartition() {
+    private void scanBootSector() {
         try {
             WindowBasedTextGUI gui = getTextGUI();
             WaitingDialog dialog = WaitingDialog.showDialog(gui, partition.getFileName(), "Reading boot sector\nPlease wait...");
@@ -52,6 +53,21 @@ class MainWindow extends AbstractWindow {
     }
 
     private void scanFat() {
-        //
+        try {
+            WindowBasedTextGUI gui = getTextGUI();
+            WaitingDialog dialog = WaitingDialog.showDialog(gui, partition.getFileName(), "Reading FAT\nPlease wait...");
+            gui.updateScreen();
+            showFat();
+            dialog.close();
+        } catch (IOException ex) {
+            LOG.log(System.Logger.Level.ERROR, "", ex);
+        }
+    }
+
+    private void showFat() throws IOException {
+        FatEntries fat = partition.getFat();
+        FatPanel fatPanel = new FatPanel();
+        fatPanel.init(fat.getHeads().chains());
+        mainPanel.addComponent(fatPanel);
     }
 }

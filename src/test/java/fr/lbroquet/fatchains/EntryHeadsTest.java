@@ -67,7 +67,7 @@ public class EntryHeadsTest {
             ByteBuffer fileBuffer = ByteBuffer.allocate(fileSize);
             channel.read(fileBuffer);
             FatEntries entries = new FatEntries(fileBuffer.rewind());
-            return EntryHeads.from(entries).chains();
+            return entries.getHeads().chains();
         }
     }
 }

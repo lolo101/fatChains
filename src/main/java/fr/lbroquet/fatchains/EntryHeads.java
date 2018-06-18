@@ -6,17 +6,10 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-class EntryHeads {
+public class EntryHeads {
 
     private final SortedMap<Integer, FatEntry> pointedAt = new TreeMap<>();
     private final SortedMap<Integer, FatEntry> allocateds = new TreeMap<>();
-
-    public static EntryHeads from(FatEntries entries) {
-        final EntryHeads heads = new EntryHeads();
-        return entries.stream()
-                .skip(2)
-                .reduce(heads, EntryHeads::consider, EntryHeads::merge);
-    }
 
     public EntryHeads consider(FatEntry entry) {
         allocateds.put(entry.getIndex(), entry);

@@ -22,6 +22,10 @@ public class FatEntries implements Iterable<FatEntry> {
     public Stream<FatEntry> stream() {
         return StreamSupport.stream(spliterator(), false);
     }
+
+    public EntryHeads getHeads() {
+        return stream().skip(2).reduce(new EntryHeads(), EntryHeads::consider, EntryHeads::merge);
+    }
 }
 
 class FatEntryIterator implements Iterator<FatEntry> {

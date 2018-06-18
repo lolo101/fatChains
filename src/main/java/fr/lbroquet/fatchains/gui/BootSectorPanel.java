@@ -5,7 +5,7 @@ import com.googlecode.lanterna.gui2.Label;
 import com.googlecode.lanterna.gui2.Panel;
 import fr.lbroquet.fatchains.BootSector;
 
-public class BootSectorPanel extends Panel {
+class BootSectorPanel extends Panel {
 
     public void init(BootSector bootSector) {
         byte[] jmp = bootSector.getJmp();

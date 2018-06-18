@@ -12,6 +12,8 @@ import java.util.Optional;
 
 public class Main {
 
+    private static final System.Logger LOG = System.getLogger(Main.class.getName());
+
     private final MultiWindowTextGUI gui;
 
     public static void main(String... args) throws IOException {
@@ -34,9 +36,12 @@ public class Main {
     }
 
     private void showMainWindow(File path) {
-        Partition partition = new Partition(path.toPath());
-        Window window = new MainWindow(partition);
-        gui.addWindow(window);
-        gui.waitForWindowToClose(window);
+        try (Partition partition = new Partition(path.toPath())) {
+            Window window = new MainWindow(partition);
+            gui.addWindow(window);
+            gui.waitForWindowToClose(window);
+        } catch (IOException ex) {
+            LOG.log(System.Logger.Level.ERROR, "", ex);
+        }
     }
 }

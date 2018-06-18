@@ -15,8 +15,8 @@ public class EntryChain implements Iterable<FatEntry> {
         this.entries = entries;
     }
 
-    public Stream<FatEntry> stream() {
-        return StreamSupport.stream(spliterator(), false);
+    public int getHead() {
+        return head;
     }
 
     @Override
@@ -37,5 +37,17 @@ public class EntryChain implements Iterable<FatEntry> {
                 return current;
             }
         };
+    }
+
+    public Stream<FatEntry> stream() {
+        return StreamSupport.stream(spliterator(), false);
+    }
+
+    public boolean isFinished() {
+        return stream().anyMatch(FatEntry::isLastOfChain);
+    }
+
+    public long length() {
+        return stream().count();
     }
 }
