@@ -1,18 +1,11 @@
-package fr.lbroquet.boot;
+package fr.lbroquet.fatchains;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import lombok.Value;
 
 @Value
 public class BootSector {
-
-    private static final int BYTES_PER_SECTOR = 512;
 
     final byte[] jmp = new byte[3];
     final byte[] name = new byte[8];
@@ -32,16 +25,7 @@ public class BootSector {
     final byte driveSelect;
     final byte pctUse;
 
-    public static BootSector from(Path path) throws IOException {
-        try (FileChannel channel = FileChannel.open(path, StandardOpenOption.READ)) {
-            ByteBuffer buffer = ByteBuffer.allocate(BYTES_PER_SECTOR);
-            buffer.order(ByteOrder.LITTLE_ENDIAN);
-            channel.read(buffer);
-            return new BootSector(buffer.rewind());
-        }
-    }
-
-    private BootSector(ByteBuffer buffer) {
+    BootSector(ByteBuffer buffer) {
         buffer.get(jmp);
         buffer.get(name);
         buffer.position(64);
@@ -80,5 +64,13 @@ public class BootSector {
 
     public long getVolumeLengthInBytes() {
         return volumeLength << bytesPerSectorExposant;
+    }
+
+    public long getFatOffsetInBytes() {
+        return fatOffset << bytesPerSectorExposant;
+    }
+
+    public long getFatLengthInBytes() {
+        return fatLength << bytesPerSectorExposant;
     }
 }

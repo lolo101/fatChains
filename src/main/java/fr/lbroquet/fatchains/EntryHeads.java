@@ -11,6 +11,13 @@ class EntryHeads {
     private final SortedMap<Integer, FatEntry> pointedAt = new TreeMap<>();
     private final SortedMap<Integer, FatEntry> allocateds = new TreeMap<>();
 
+    public static EntryHeads from(FatEntries entries) {
+        final EntryHeads heads = new EntryHeads();
+        return entries.stream()
+                .skip(2)
+                .reduce(heads, EntryHeads::consider, EntryHeads::merge);
+    }
+
     public EntryHeads consider(FatEntry entry) {
         allocateds.put(entry.getIndex(), entry);
         pointedAt.put(entry.getNextEntryIndex(), entry);

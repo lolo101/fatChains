@@ -3,7 +3,7 @@ package fr.lbroquet.fatchains.gui;
 import com.googlecode.lanterna.gui2.EmptySpace;
 import com.googlecode.lanterna.gui2.Label;
 import com.googlecode.lanterna.gui2.Panel;
-import fr.lbroquet.boot.BootSector;
+import fr.lbroquet.fatchains.BootSector;
 
 public class BootSectorPanel extends Panel {
 
@@ -20,6 +20,11 @@ public class BootSectorPanel extends Panel {
         addComponent(new Label(String.format("Sector per Cluster: 2^%d (%d)", bootSector.getSectorPerClusterExposant(), bootSector.getSectorPerCluster())));
         addComponent(new Label(String.format("(Bytes per Cluster: %d)", bootSector.getBytesPerCluster())));
         addComponent(new EmptySpace());
+        addComponent(new Label("Partition offset: " + bootSector.getPartitionOffset() + " sectors"));
+        addComponent(new Label("Volume length   : " + bootSector.getVolumeLength() + " sectors"));
+        addComponent(new Label("(" + bootSector.getVolumeLengthInBytes() + " Bytes)"));
+        addComponent(new Label(String.format("Usage: %d%%", bootSector.getPctUse())));
+        addComponent(new EmptySpace());
         addComponent(new Label("FAT offset: " + bootSector.getFatOffset() + " sectors"));
         addComponent(new Label("FAT length: " + bootSector.getFatLength() + " sectors"));
         addComponent(new Label("Nb of FATs: " + bootSector.getNbFats()));
@@ -27,11 +32,6 @@ public class BootSectorPanel extends Panel {
         addComponent(new Label("Cluster heap offset: " + bootSector.getClusterOffset() + " sectors"));
         addComponent(new Label("Cluster count      : " + bootSector.getClusterCount()));
         addComponent(new Label("Root cluster       : " + bootSector.getRootCluster()));
-        addComponent(new EmptySpace());
-        addComponent(new Label("Partition offset: " + bootSector.getPartitionOffset() + " sectors"));
-        addComponent(new Label("Volume length   : " + bootSector.getVolumeLength() + " sectors"));
-        addComponent(new Label("(" + bootSector.getVolumeLengthInBytes() + " Bytes)"));
-        addComponent(new Label(String.format("Usage: %d%%", bootSector.getPctUse())));
         addComponent(new EmptySpace());
         addComponent(new Label("Flags: " + bootSector.getFlags()));
         addComponent(new Label("    Active FAT: " + ((bootSector.getFlags() & 1) == 0 ? "First" : "Second")));

@@ -1,4 +1,4 @@
-package fr.lbroquet.boot;
+package fr.lbroquet.fatchains;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -13,7 +13,8 @@ public class BootSectorTest {
 
     public BootSectorTest() throws URISyntaxException, IOException {
         URL boot = BootSectorTest.class.getClassLoader().getResource("boot.bin");
-        bootSector = BootSector.from(Paths.get(boot.toURI()));
+        Partition partition = new Partition(Paths.get(boot.toURI()));
+        bootSector = partition.getBootSector();
     }
 
     @Test
@@ -44,5 +45,15 @@ public class BootSectorTest {
     @Test
     public void should_convert_volumeLengthInBytes() throws Exception {
         Assert.assertEquals(bootSector.getBytesPerSector() * bootSector.getVolumeLength(), bootSector.getVolumeLengthInBytes());
+    }
+
+    @Test
+    public void should_convert_fatOffsetInBytes() throws Exception {
+        Assert.assertEquals(bootSector.getBytesPerSector() * bootSector.getFatOffset(), bootSector.getFatOffsetInBytes());
+    }
+
+    @Test
+    public void should_convert_fatLengthInBytes() throws Exception {
+        Assert.assertEquals(bootSector.getBytesPerSector() * bootSector.getFatLength(), bootSector.getFatLengthInBytes());
     }
 }

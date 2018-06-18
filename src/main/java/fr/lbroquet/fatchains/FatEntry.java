@@ -4,14 +4,11 @@ public class FatEntry implements Comparable<FatEntry> {
 
     public static final int END_OF_CHAIN = 0xffffffff;
     private final int index;
-    private final int value;
+    private final int nextEntryIndex;
 
-    FatEntry(int index, byte[] b) {
+    FatEntry(int index, int nextEntryIndex) {
         this.index = index;
-        this.value = ((b[3] & 0xff) << 24)
-                + ((b[2]  &0xff) << 16)
-                + ((b[1] & 0xff) << 8)
-                + (b[0] & 0xff);
+        this.nextEntryIndex = nextEntryIndex;
     }
 
     public int getIndex() {
@@ -19,15 +16,11 @@ public class FatEntry implements Comparable<FatEntry> {
     }
 
     public int getNextEntryIndex() {
-        return value;
+        return nextEntryIndex;
     }
 
     public boolean isLastOfChain() {
-        return value == END_OF_CHAIN;
-    }
-
-    public boolean isAllocated() {
-        return value != 0;
+        return nextEntryIndex == END_OF_CHAIN;
     }
 
     @Override
