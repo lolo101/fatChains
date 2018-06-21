@@ -34,8 +34,8 @@ public class FatEntry implements Comparable<FatEntry> {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return obj instanceof FatEntry && compareTo((FatEntry) obj) == 0;
+    public boolean equals(Object other) {
+        return other instanceof FatEntry && compareTo((FatEntry) other) == 0;
     }
 
 }

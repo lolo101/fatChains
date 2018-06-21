@@ -11,6 +11,7 @@ import java.util.Optional;
 
 public class Partition implements Closeable {
 
+    private static final System.Logger LOG = System.getLogger(Partition.class.getName());
     private static final int BYTES_PER_SECTOR = 512;
 
     private final Path path;
@@ -34,8 +35,7 @@ public class Partition implements Closeable {
     private BootSector readAndCacheBootSector() throws IOException {
         ByteBuffer buffer = ByteBuffer.allocate(BYTES_PER_SECTOR);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
-        channel.position(0);
-        channel.read(buffer);
+        readChannel(0, buffer);
         bootSector = new BootSector(buffer.rewind());
         return bootSector;
     }
@@ -47,23 +47,26 @@ public class Partition implements Closeable {
     private FatEntries readAndCacheFat() throws IOException {
         BootSector bootSector = getBootSector();
         ByteBuffer buffer = ByteBuffer.allocate((int) bootSector.getFatLengthInBytes());
-        channel.position(bootSector.getFatOffsetInBytes());
-        channel.read(buffer);
+        readChannel(bootSector.getFatOffsetInBytes(), buffer);
         fat = new FatEntries(buffer);
         return fat;
     }
 
     public String guessEntryType(int entryIndex) throws IOException {
-        channel.position(getHeadClusterPosition(entryIndex));
-        ByteBuffer buffer = ByteBuffer.allocate(32);
-        channel.read(buffer);
-        EntryType.searchSignature(buffer.array());
-        return null;
+        ByteBuffer buffer = ByteBuffer.allocate(BYTES_PER_SECTOR);
+        readChannel(getHeadClusterPosition(entryIndex), buffer);
+        return EntryType.searchSignature(buffer.array());
     }
 
     private long getHeadClusterPosition(int entryIndex) throws IOException {
         BootSector bootSector = getBootSector();
         return bootSector.getClusterOffset() + (entryIndex - 2) * bootSector.getBytesPerCluster();
+    }
+
+    private void readChannel(long position, ByteBuffer buffer) throws IOException {
+        LOG.log(System.Logger.Level.INFO, "Reading {0} bytes from {1} @{2}", buffer.remaining(), path, position);
+        channel.position(position);
+        channel.read(buffer);
     }
 
     @Override

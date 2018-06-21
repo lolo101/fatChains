@@ -1,10 +1,11 @@
 package fr.lbroquet.fatchains.gui;
 
+import com.googlecode.lanterna.gui2.Label;
 import com.googlecode.lanterna.gui2.Panel;
 import com.googlecode.lanterna.gui2.table.Table;
 import com.googlecode.lanterna.gui2.table.TableModel;
 import fr.lbroquet.fatchains.EntryChain;
-import java.util.Collection;
+import java.util.stream.Stream;
 
 class FatPanel extends Panel {
 
@@ -16,8 +17,9 @@ class FatPanel extends Panel {
         model = table.getTableModel();
     }
 
-    void init(Collection<EntryChain> chains) {
-        chains.stream().forEach(this::addRow);
+    void init(Stream<EntryChain> chains) {
+        chains.forEach(this::addRow);
+        addComponent(new Label(String.valueOf(table.getTableModel().getRowCount())));
         addComponent(table);
     }
 
