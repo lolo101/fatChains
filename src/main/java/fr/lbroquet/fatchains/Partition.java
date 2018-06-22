@@ -9,6 +9,15 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Optional;
 
+/**
+ * This class represents an exFAT partition.
+ * The partition holds a set of objects :
+ * <ul>
+ * <li>A Boot sector, holding information about the structure of the partition</li>
+ * <li>A File Allocation Table (FAT) where the chains of clusters holding the files contents are referenced.</li>
+ * <li>A Cluster heap holding the actual content of files.</li>
+ * </ul>
+ */
 public class Partition implements Closeable {
 
     private static final System.Logger LOG = System.getLogger(Partition.class.getName());

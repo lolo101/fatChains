@@ -19,7 +19,7 @@ class FatPanel extends Panel {
 
     void init(Stream<EntryChain> chains) {
         chains.forEach(this::addRow);
-        addComponent(new Label(String.valueOf(table.getTableModel().getRowCount())));
+        addComponent(new Label(String.valueOf(model.getRowCount())));
         addComponent(table);
     }
 
