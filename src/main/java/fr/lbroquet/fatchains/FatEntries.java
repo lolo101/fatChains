@@ -16,7 +16,7 @@ public class FatEntries implements Iterable<FatEntry> {
 
     @Override
     public Iterator<FatEntry> iterator() {
-        return new FatEntryIterator(buffer.duplicate().order(ByteOrder.LITTLE_ENDIAN));
+        return new FatEntryIterator(buffer.duplicate().order(ByteOrder.LITTLE_ENDIAN).rewind());
     }
 
     public Stream<FatEntry> stream() {

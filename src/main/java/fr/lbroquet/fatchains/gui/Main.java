@@ -3,6 +3,7 @@ package fr.lbroquet.fatchains.gui;
 import com.googlecode.lanterna.gui2.MultiWindowTextGUI;
 import com.googlecode.lanterna.gui2.Window;
 import com.googlecode.lanterna.gui2.dialogs.FileDialogBuilder;
+import com.googlecode.lanterna.gui2.dialogs.MessageDialogBuilder;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import fr.lbroquet.fatchains.Partition;
@@ -42,6 +43,10 @@ public class Main {
             gui.waitForWindowToClose(window);
         } catch (IOException ex) {
             LOG.log(System.Logger.Level.ERROR, "", ex);
+            new MessageDialogBuilder()
+                    .setTitle(ex.getClass().getName())
+                    .setText(ex.getLocalizedMessage())
+                    .build().showDialog(gui);
         }
     }
 }

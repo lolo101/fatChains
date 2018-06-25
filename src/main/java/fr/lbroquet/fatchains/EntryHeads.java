@@ -1,28 +1,30 @@
 package fr.lbroquet.fatchains;
 
 import java.util.Collection;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Stream;
 
 public class EntryHeads {
 
+    private final SortedMap<Integer, FatEntry> allocateds = new TreeMap<>();
     private final Collection<Integer> pointedAt = new TreeSet<>();
-    private final Collection<FatEntry> allocateds = new TreeSet<>();
 
     public EntryHeads consider(FatEntry entry) {
-        allocateds.add(entry);
+        allocateds.put(entry.getIndex(), entry);
         pointedAt.add(entry.getNextEntryIndex());
         return this;
     }
 
     public EntryHeads merge(EntryHeads otherHeads) {
-        allocateds.addAll(otherHeads.allocateds);
+        allocateds.putAll(otherHeads.allocateds);
         pointedAt.addAll(otherHeads.pointedAt);
         return this;
     }
 
     public Stream<EntryChain> chains() {
-        return allocateds.stream()
+        return allocateds.values().stream()
                 .filter(this::notPointedAt)
                 .map(this::toEntryChain);
     }

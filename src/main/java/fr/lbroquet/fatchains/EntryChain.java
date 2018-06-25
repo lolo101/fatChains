@@ -1,16 +1,16 @@
 package fr.lbroquet.fatchains;
 
-import java.util.Collection;
 import java.util.Iterator;
+import java.util.SortedMap;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 public class EntryChain implements Iterable<FatEntry> {
 
     private final int head;
-    private final Collection<FatEntry> entries;
+    private final SortedMap<Integer, FatEntry> entries;
 
-    EntryChain(int head, Collection<FatEntry> entries) {
+    EntryChain(int head, SortedMap<Integer, FatEntry> entries) {
         this.head = head;
         this.entries = entries;
     }
