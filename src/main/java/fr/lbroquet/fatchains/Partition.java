@@ -2,6 +2,7 @@ package fr.lbroquet.fatchains;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
@@ -38,27 +39,35 @@ public class Partition implements Closeable {
     }
 
     public BootSector getBootSector() throws IOException {
-        return Optional.ofNullable(bootSector).orElse(readAndCacheBootSector());
+        return Optional.ofNullable(bootSector).orElseGet(() -> readAndCacheBootSector());
     }
 
-    private BootSector readAndCacheBootSector() throws IOException {
-        ByteBuffer buffer = ByteBuffer.allocate(BYTES_PER_SECTOR);
-        buffer.order(ByteOrder.LITTLE_ENDIAN);
-        readChannel(0, buffer);
-        bootSector = new BootSector(buffer.rewind());
-        return bootSector;
+    private BootSector readAndCacheBootSector() {
+        try {
+            ByteBuffer buffer = ByteBuffer.allocate(BYTES_PER_SECTOR);
+            buffer.order(ByteOrder.LITTLE_ENDIAN);
+            readChannel(0, buffer);
+            bootSector = new BootSector(buffer.rewind());
+            return bootSector;
+        } catch (IOException ex) {
+            throw new UncheckedIOException(ex);
+        }
     }
 
     public FatEntries getFat() throws IOException {
-        return Optional.ofNullable(fat).orElse(readAndCacheFat());
+        return Optional.ofNullable(fat).orElseGet(() -> readAndCacheFat());
     }
 
-    private FatEntries readAndCacheFat() throws IOException {
-        BootSector bootSector = getBootSector();
-        ByteBuffer buffer = ByteBuffer.allocate((int) bootSector.getFatLengthInBytes());
-        readChannel(bootSector.getFatOffsetInBytes(), buffer);
-        fat = new FatEntries(buffer);
-        return fat;
+    private FatEntries readAndCacheFat() {
+        try {
+            BootSector bootSector = getBootSector();
+            ByteBuffer buffer = ByteBuffer.allocate((int) bootSector.getFatLengthInBytes());
+            readChannel(bootSector.getFatOffsetInBytes(), buffer);
+            fat = new FatEntries(buffer);
+            return fat;
+        } catch (IOException ex) {
+            throw new UncheckedIOException(ex);
+        }
     }
 
     public String guessEntryType(int entryIndex) throws IOException {

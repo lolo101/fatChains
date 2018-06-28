@@ -1,38 +1,41 @@
 package fr.lbroquet.fatchains;
 
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.SortedMap;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
-public class EntryChain implements Iterable<FatEntry> {
+public class EntryChain {
 
     private final int head;
     private final SortedMap<Integer, FatEntry> entries;
+    private final List<FatEntry> chain = new ArrayList<>();
 
     EntryChain(int head, SortedMap<Integer, FatEntry> entries) {
         this.head = head;
         this.entries = entries;
+        buildEntryList();
+    }
+
+    private void buildEntryList() {
+        for (int next = head; entries.containsKey(next) ; next = entries.get(next).getNextEntryIndex()) {
+            chain.add(entries.get(next));
+        }
     }
 
     public int getHead() {
         return head;
     }
 
-    @Override
-    public Iterator<FatEntry> iterator() {
-        return new EntryChainIterator(head, entries);
-    }
-
     public Stream<FatEntry> stream() {
-        return StreamSupport.stream(spliterator(), false);
+        return chain.stream();
     }
 
     public boolean isFinished() {
-        return stream().anyMatch(FatEntry::isLastOfChain);
+        return chain.get(chain.size() - 1).isLastOfChain();
     }
 
     public long length() {
-        return stream().count();
+        return chain.size();
     }
 }

@@ -20,7 +20,7 @@ public class EntryType {
         if (array[0] == 0xffffff89 && array[1] == 'P' && array[2] == 'N' && array[3] == 'G' && array[4] == '\r' && array[5] == '\n' && array[6] == 0x1a && array[7] == 0x0a) {
             return "PNG image";
         }
-        if (array[0] == -1 && array[1] == 0xffffffd8 && array[2] == -1 && array[3] == 0xffffffe0) {
+        if (array[0] == -1 && array[1] == 0xffffffd8) {
             return "JPEG image";
         }
 
@@ -31,11 +31,30 @@ public class EntryType {
         if (array[0] == 'F' && array[1] == 'L' && array[2] == 'V' && array[3] == 1) {
             return "Macromedia Flash Video File (" + ((array[4] & 0x04) == 0 ? "" : "audio") + "/" + ((array[4] & 0x01) == 0 ? "" : "video") + ")";
         }
+        if (array[4] == 'f' && array[5] == 't' && array[6] == 'y' && array[7] == 'p') {
+            return "ISO Base Media File (brand:" + new String(array, 8, 4, Charset.forName("ASCII")) + ")";
+        }
 
         // Texts
         if (array[0] == '<' && array[1] == '?' && array[2] == 'x' && array[3] == 'm' && array[4] == 'l') {
             return "XML document";
         }
-        return "?";
+        return showFirstBytes(array);
+    }
+
+    private static String showFirstBytes(byte[] array) {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < 32; ++i) {
+            builder.append(String.format("%02x ", array[i]));
+        }
+        builder.append('\t');
+        for (int i = 0; i < 32; ++i) {
+            builder.append(asCharacter(array[i]));
+        }
+        return builder.toString();
+    }
+
+    private static char asCharacter(byte b) {
+        return b >= 0x20 && b < 0x7f ? (char) b : '.';
     }
 }
