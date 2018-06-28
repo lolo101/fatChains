@@ -5,27 +5,39 @@ import com.googlecode.lanterna.gui2.Panel;
 import com.googlecode.lanterna.gui2.table.Table;
 import com.googlecode.lanterna.gui2.table.TableModel;
 import fr.lbroquet.fatchains.EntryChain;
-import java.util.stream.Stream;
+import fr.lbroquet.fatchains.Partition;
+import java.io.IOException;
 
 class FatPanel extends Panel {
 
+    private final Partition partition;
     private final Table table;
     private final TableModel model;
 
-    public FatPanel() {
-        table = new Table("Index", "Size");
+    public FatPanel(Partition partition) {
+        this.partition = partition;
+        table = new Table("Index", "Size", "Type");
         model = table.getTableModel();
     }
 
-    void init(Stream<EntryChain> chains) {
-        chains.forEach(this::addRow);
-        addComponent(new Label(String.valueOf(model.getRowCount())));
+    void init() throws IOException {
+        partition.getFat().getHeads().chains().forEach(this::addRow);
+        addComponent(new Label(String.format("%s chains found", model.getRowCount())));
         addComponent(table);
     }
 
     private void addRow(EntryChain chain) {
         int head = chain.getHead();
         long length = chain.length();
-        model.addRow(head, length);
+        String type = tryGuessFileType(head);
+        model.addRow(head, length, type);
+    }
+
+    private String tryGuessFileType(int head) {
+        try {
+            return partition.guessEntryType(head);
+        } catch (IOException ex) {
+            return "<error>";
+        }
     }
 }

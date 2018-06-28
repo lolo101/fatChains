@@ -13,7 +13,7 @@ public class BootSector {
     final long volumeLength;
     final int fatOffset;
     final int fatLength;
-    final int clusterOffset;
+    final long clusterOffset;
     final int clusterCount;
     final int rootCluster;
     final int volumeSN;
@@ -58,7 +58,7 @@ public class BootSector {
         return 1 << sectorPerClusterExposant;
     }
 
-    public int getBytesPerCluster() {
+    public long getBytesPerCluster() {
         return 1 << (bytesPerSectorExposant + sectorPerClusterExposant);
     }
 
@@ -72,5 +72,9 @@ public class BootSector {
 
     public long getFatLengthInBytes() {
         return fatLength << bytesPerSectorExposant;
+    }
+
+    public long getClusterOffsetInBytes() {
+        return clusterOffset << bytesPerSectorExposant;
     }
 }

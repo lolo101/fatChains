@@ -7,7 +7,6 @@ import com.googlecode.lanterna.gui2.LinearLayout;
 import com.googlecode.lanterna.gui2.Panel;
 import com.googlecode.lanterna.gui2.WindowBasedTextGUI;
 import com.googlecode.lanterna.gui2.dialogs.WaitingDialog;
-import fr.lbroquet.fatchains.FatEntries;
 import fr.lbroquet.fatchains.Partition;
 import java.io.IOException;
 
@@ -65,9 +64,8 @@ class MainWindow extends AbstractWindow {
     }
 
     private void showFat() throws IOException {
-        FatEntries fat = partition.getFat();
-        FatPanel fatPanel = new FatPanel();
-        fatPanel.init(fat.getHeads().chains());
+        FatPanel fatPanel = new FatPanel(partition);
+        fatPanel.init();
         mainPanel.addComponent(fatPanel);
     }
 }

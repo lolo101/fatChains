@@ -69,7 +69,7 @@ public class Partition implements Closeable {
 
     private long getHeadClusterPosition(int entryIndex) throws IOException {
         BootSector bootSector = getBootSector();
-        return bootSector.getClusterOffset() + (entryIndex - 2) * bootSector.getBytesPerCluster();
+        return bootSector.getClusterOffsetInBytes() + (entryIndex - 2) * bootSector.getBytesPerCluster();
     }
 
     private void readChannel(long position, ByteBuffer buffer) throws IOException {

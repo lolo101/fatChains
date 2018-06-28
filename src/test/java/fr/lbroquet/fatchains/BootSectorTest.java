@@ -57,4 +57,9 @@ public class BootSectorTest {
     public void should_convert_fatLengthInBytes() throws Exception {
         Assert.assertEquals(bootSector.getBytesPerSector() * bootSector.getFatLength(), bootSector.getFatLengthInBytes());
     }
+
+    @Test
+    public void should_convert_clusterOffsetInBytes() throws Exception {
+        Assert.assertEquals(Math.multiplyExact(bootSector.getBytesPerSector(), bootSector.getClusterOffset()), bootSector.getClusterOffsetInBytes());
+    }
 }
