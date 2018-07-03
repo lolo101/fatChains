@@ -39,6 +39,11 @@ public class EntryType {
         if (array[0] == '<' && array[1] == '?' && array[2] == 'x' && array[3] == 'm' && array[4] == 'l') {
             return "XML document";
         }
+
+        // Binary
+        if (array[0] == 0xffffff85) {
+            return "FAT Index";
+        }
         return showFirstBytes(array);
     }
 

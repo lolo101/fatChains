@@ -1,4 +1,4 @@
-package fr.lbroquet.fatchains.gui;
+package fr.lbroquet.fatchains.lanterna;
 
 import com.googlecode.lanterna.gui2.AbstractWindow;
 import com.googlecode.lanterna.gui2.Button;
