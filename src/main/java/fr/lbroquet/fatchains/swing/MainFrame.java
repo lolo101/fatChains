@@ -20,32 +20,19 @@ public class MainFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        buttonsPanel = new javax.swing.JPanel();
-        quitButton = new javax.swing.JButton();
-        centerPanel = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        javax.swing.JPanel centerPanel = new javax.swing.JPanel();
+        javax.swing.JScrollPane scrollPane = new javax.swing.JScrollPane();
         fatTable = new javax.swing.JTable();
-        jPanel1 = new javax.swing.JPanel();
-        scanButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        quitButton.setText("Quit");
-        buttonsPanel.add(quitButton);
-
-        getContentPane().add(buttonsPanel, java.awt.BorderLayout.PAGE_END);
-
         centerPanel.setLayout(new java.awt.BorderLayout());
 
+        fatTable.setAutoCreateRowSorter(true);
         fatTable.setModel(tableModel);
-        jScrollPane1.setViewportView(fatTable);
+        scrollPane.setViewportView(fatTable);
 
-        centerPanel.add(jScrollPane1, java.awt.BorderLayout.CENTER);
-
-        scanButton.setText("SCAN");
-        jPanel1.add(scanButton);
-
-        centerPanel.add(jPanel1, java.awt.BorderLayout.LINE_START);
+        centerPanel.add(scrollPane, java.awt.BorderLayout.CENTER);
 
         getContentPane().add(centerPanel, java.awt.BorderLayout.CENTER);
 
@@ -53,12 +40,6 @@ public class MainFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel buttonsPanel;
-    private javax.swing.JPanel centerPanel;
     private javax.swing.JTable fatTable;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JButton quitButton;
-    private javax.swing.JButton scanButton;
     // End of variables declaration//GEN-END:variables
 }
