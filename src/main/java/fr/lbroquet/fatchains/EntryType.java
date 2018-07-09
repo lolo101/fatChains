@@ -34,6 +34,9 @@ public class EntryType {
         if (array[4] == 'f' && array[5] == 't' && array[6] == 'y' && array[7] == 'p') {
             return "ISO Base Media File (brand:" + new String(array, 8, 4, Charset.forName("ASCII")) + ")";
         }
+        if (array[0] == 0x1a && array[1] == 'E' && array[2] == 0xffffffdf && array[3] == 0xffffffa3) {
+            return "Matroska";
+        }
 
         // Texts
         if (array[0] == '<' && array[1] == '?' && array[2] == 'x' && array[3] == 'm' && array[4] == 'l') {
@@ -41,8 +44,11 @@ public class EntryType {
         }
 
         // Binary
-        if (array[0] == 0xffffff85) {
-            return "FAT Index";
+        if (array[0] == 0x7f && array[1] == 'E' && array[2] == 'L' && array[3] == 'F') {
+            return "Executable and Linkable Format";
+        }
+        if (array[0] == 0xffffff85 && array[1] > 1 && array[1] < 19) {
+            return "FAT FileDirectory: " + showFirstBytes(array);
         }
         return showFirstBytes(array);
     }

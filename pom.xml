@@ -13,7 +13,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>fr.lbroquet.fatchains.gui.Main</mainClass>
+                            <mainClass>fr.lbroquet.fatchains.swing.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

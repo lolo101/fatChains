@@ -15,6 +15,9 @@ public class FileDirectoryEntry {
         }
 
         secondaryCount = buffer.get();
+        if (secondaryCount < 2 || secondaryCount > 18) {
+            throw new IllegalArgumentException(String.format("Secondary count out of range: %d", secondaryCount));
+        }
 
         short checksum = buffer.getShort();
 

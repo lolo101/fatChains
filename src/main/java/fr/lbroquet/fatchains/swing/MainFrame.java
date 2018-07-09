@@ -1,13 +1,18 @@
 package fr.lbroquet.fatchains.swing;
 
+import fr.lbroquet.fatchains.Partition;
+import java.io.IOException;
+import java.nio.file.Path;
 import javax.swing.table.TableModel;
 
 public class MainFrame extends javax.swing.JFrame {
 
+    private final Partition partition;
     private final TableModel tableModel;
 
-    public MainFrame(TableModel tableModel) {
-        this.tableModel = tableModel;
+    public MainFrame(Path path) throws IOException {
+        this.partition = new Partition(path);
+        this.tableModel = new FatTableModel(partition);
         initComponents();
     }
 
@@ -25,6 +30,12 @@ public class MainFrame extends javax.swing.JFrame {
         fatTable = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("FAT Table");
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         centerPanel.setLayout(new java.awt.BorderLayout());
 
@@ -38,6 +49,14 @@ public class MainFrame extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        try {
+            partition.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }//GEN-LAST:event_formWindowClosing
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable fatTable;
