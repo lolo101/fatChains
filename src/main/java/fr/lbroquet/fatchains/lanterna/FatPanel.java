@@ -21,7 +21,7 @@ class FatPanel extends Panel {
     }
 
     void init() throws IOException {
-        partition.getFat().getHeads().chains().filter(EntryChain::isFinished).forEach(this::addRow);
+        partition.getEntryChains().stream().filter(EntryChain::isFinished).forEach(this::addRow);
         addComponent(new Label(String.format("%s chains found", model.getRowCount())));
         addComponent(table);
     }

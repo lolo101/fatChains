@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import javax.swing.table.AbstractTableModel;
 
 public class FatTableModel extends AbstractTableModel {
@@ -17,8 +16,8 @@ public class FatTableModel extends AbstractTableModel {
     private final Map<Integer, String> types = new HashMap<>();
 
     FatTableModel(Partition partition) throws IOException {
-        this.chains = partition.getFat().getHeads().chains().collect(Collectors.toList());
         this.partition = partition;
+        this.chains = partition.getEntryChains();
     }
 
     @Override

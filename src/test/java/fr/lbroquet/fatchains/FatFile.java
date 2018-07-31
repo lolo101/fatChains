@@ -2,7 +2,7 @@ package fr.lbroquet.fatchains;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.stream.Stream;
+import java.util.List;
 
 public class FatFile {
 
@@ -12,7 +12,7 @@ public class FatFile {
         this.buffer = new ResourceBuffer(name);
     }
 
-    public Stream<EntryChain> readChains() {
+    public List<EntryChain> readChains() {
         return new FatEntries(buffer.getBuffer()).getHeads().chains();
     }
 }

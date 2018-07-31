@@ -1,10 +1,11 @@
 package fr.lbroquet.fatchains;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 public class EntryHeads {
 
@@ -23,10 +24,11 @@ public class EntryHeads {
         return this;
     }
 
-    public Stream<EntryChain> chains() {
+    public List<EntryChain> chains() {
         return allocateds.values().stream()
                 .filter(this::notPointedAt)
-                .map(this::toEntryChain);
+                .map(this::toEntryChain)
+                .collect(Collectors.toList());
     }
 
     private boolean notPointedAt(FatEntry e) {

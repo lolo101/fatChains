@@ -8,6 +8,7 @@ import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -27,7 +28,7 @@ public class Partition implements Closeable {
     private final Path path;
     private final FileChannel channel;
     private BootSector bootSector;
-    private FatEntries fat;
+    private List<EntryChain> entryChains;
 
     public Partition(Path path) throws IOException {
         this.path = path;
@@ -54,17 +55,17 @@ public class Partition implements Closeable {
         }
     }
 
-    public FatEntries getFat() throws IOException {
-        return Optional.ofNullable(fat).orElseGet(() -> readAndCacheFat());
+    public List<EntryChain> getEntryChains() throws IOException {
+        return Optional.ofNullable(entryChains).orElseGet(() -> readAndCacheEntryChains());
     }
 
-    private FatEntries readAndCacheFat() {
+    private List<EntryChain> readAndCacheEntryChains() {
         try {
             BootSector bootSector = getBootSector();
             ByteBuffer buffer = ByteBuffer.allocate((int) bootSector.getFatLengthInBytes());
             readChannel(bootSector.getFatOffsetInBytes(), buffer);
-            fat = new FatEntries(buffer);
-            return fat;
+            entryChains = new FatEntries(buffer).getHeads().chains();
+            return entryChains;
         } catch (IOException ex) {
             throw new UncheckedIOException(ex);
         }
