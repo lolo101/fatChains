@@ -8,16 +8,14 @@ import java.util.stream.Stream;
 public class EntryChain {
 
     private final int head;
-    private final SortedMap<Integer, FatEntry> entries;
     private final List<FatEntry> chain = new ArrayList<>();
 
     EntryChain(int head, SortedMap<Integer, FatEntry> entries) {
         this.head = head;
-        this.entries = entries;
-        buildEntryList();
+        buildEntryList(entries);
     }
 
-    private void buildEntryList() {
+    private void buildEntryList(SortedMap<Integer, FatEntry> entries) {
         for (int next = head; entries.containsKey(next) ; next = entries.get(next).getNextEntryIndex()) {
             chain.add(entries.get(next));
         }
