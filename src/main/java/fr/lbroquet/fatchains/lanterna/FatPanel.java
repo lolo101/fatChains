@@ -31,7 +31,7 @@ class FatPanel extends Panel {
         long length = chain.length();
         long sizeKb = asSizeKb(length);
         boolean finished = chain.isFinished();
-        String type = tryGuessFileType(head);
+        String type = tryGuessFileType(chain);
         model.addRow(head, length, sizeKb, finished, type);
     }
 
@@ -43,9 +43,9 @@ class FatPanel extends Panel {
         }
     }
 
-    private String tryGuessFileType(int head) {
+    private String tryGuessFileType(EntryChain chain) {
         try {
-            return partition.guessEntryType(head);
+            return partition.guessEntryType(chain);
         } catch (IOException ex) {
             return "<error>";
         }

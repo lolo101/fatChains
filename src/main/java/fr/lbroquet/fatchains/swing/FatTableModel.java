@@ -66,7 +66,7 @@ public class FatTableModel extends AbstractTableModel {
 
     private String tryGuessAndCacheType(int rowIndex) {
         try {
-            String type = partition.guessEntryType(chains.get(rowIndex).getHead());
+            String type = partition.guessEntryType(chains.get(rowIndex));
             types.put(rowIndex, type);
             return type;
         } catch (IOException ex) {

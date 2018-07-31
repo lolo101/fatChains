@@ -71,15 +71,16 @@ public class Partition implements Closeable {
         }
     }
 
-    public String guessEntryType(int entryIndex) throws IOException {
+    public String guessEntryType(EntryChain chain) throws IOException {
         ByteBuffer buffer = ByteBuffer.allocate(BYTES_PER_SECTOR);
-        readChannel(getHeadClusterPosition(entryIndex), buffer);
+        readChannel(getHeadClusterPosition(chain), buffer);
         return EntryType.searchSignature(buffer.array());
     }
 
-    private long getHeadClusterPosition(int entryIndex) throws IOException {
+    private long getHeadClusterPosition(EntryChain chain) throws IOException {
         BootSector bootSector = getBootSector();
-        return bootSector.getClusterOffsetInBytes() + (entryIndex - 2) * bootSector.getBytesPerCluster();
+        final int headOffset = chain.getHead() - 2;
+        return bootSector.getClusterOffsetInBytes() + headOffset * bootSector.getBytesPerCluster();
     }
 
     private void readChannel(long position, ByteBuffer buffer) throws IOException {
