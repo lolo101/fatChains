@@ -38,6 +38,11 @@ public class EntryType {
             return "Matroska";
         }
 
+        // Audio
+        if (array[0] == 'M' && array[1] == 'T' && array[2] == 'h' && array[3] == 'd') {
+            return "MIDI";
+        }
+
         // Texts
         if (array[0] == '<' && array[1] == '?' && array[2] == 'x' && array[3] == 'm' && array[4] == 'l') {
             return "XML document";
