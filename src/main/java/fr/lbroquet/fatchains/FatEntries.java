@@ -3,6 +3,7 @@ package fr.lbroquet.fatchains;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Iterator;
+import java.util.List;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -23,7 +24,8 @@ public class FatEntries implements Iterable<FatEntry> {
         return StreamSupport.stream(spliterator(), false);
     }
 
-    public EntryHeads getHeads() {
-        return stream().skip(2).reduce(new EntryHeads(), EntryHeads::consider, EntryHeads::merge);
+    public List<EntryChain> getChains() {
+        EntryHeads heads = stream().skip(2).reduce(new EntryHeads(), EntryHeads::consider, EntryHeads::merge);
+        return heads.chains();
     }
 }

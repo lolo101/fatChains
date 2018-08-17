@@ -7,7 +7,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-public class EntryHeads {
+class EntryHeads {
 
     private final SortedMap<Integer, FatEntry> allocateds = new TreeMap<>();
     private final Collection<Integer> pointedAt = new TreeSet<>();
