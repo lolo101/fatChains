@@ -45,7 +45,7 @@ class MainWindow extends AbstractWindow {
         }
     }
 
-    private void showBootSector() throws IOException {
+    private void showBootSector() {
         BootSectorPanel bootSectorPanel = new BootSectorPanel();
         bootSectorPanel.init(partition.getBootSector());
         mainPanel.addComponent(bootSectorPanel);
@@ -63,7 +63,7 @@ class MainWindow extends AbstractWindow {
         }
     }
 
-    private void showFat() throws IOException {
+    private void showFat() {
         FatPanel fatPanel = new FatPanel(partition);
         fatPanel.init();
         mainPanel.addComponent(fatPanel);

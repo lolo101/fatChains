@@ -39,7 +39,7 @@ public class Partition implements Closeable {
         return path.getFileName().toString();
     }
 
-    public BootSector getBootSector() throws IOException {
+    public BootSector getBootSector() {
         return Optional.ofNullable(bootSector).orElseGet(() -> readAndCacheBootSector());
     }
 
@@ -55,7 +55,7 @@ public class Partition implements Closeable {
         }
     }
 
-    public List<EntryChain> getEntryChains() throws IOException {
+    public List<EntryChain> getEntryChains() {
         return Optional.ofNullable(entryChains).orElseGet(() -> readAndCacheEntryChains());
     }
 
@@ -77,7 +77,7 @@ public class Partition implements Closeable {
         return EntryType.searchSignature(buffer.array());
     }
 
-    private long getHeadClusterPosition(EntryChain chain) throws IOException {
+    private long getHeadClusterPosition(EntryChain chain) {
         BootSector bootSector = getBootSector();
         final int headOffset = chain.getHead() - 2;
         return bootSector.getClusterOffsetInBytes() + headOffset * bootSector.getBytesPerCluster();

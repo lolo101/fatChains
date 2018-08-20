@@ -7,17 +7,37 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import javax.swing.table.AbstractTableModel;
 
 public class FatTableModel extends AbstractTableModel {
 
+    private static class Column {
+        private final String title;
+        private final Class<?> type;
+        private final Function<EntryChain, ?> value;
+
+        <T> Column(String title, Class<T> type, Function<EntryChain, T> value) {
+            this.title = title;
+            this.type = type;
+            this.value = value;
+        }
+    }
+
     private final Partition partition;
     private final List<EntryChain> chains;
     private final Map<Integer, String> types = new HashMap<>();
+    private final Column[] columns;
 
-    FatTableModel(Partition partition) throws IOException {
+    FatTableModel(Partition partition) {
         this.partition = partition;
         this.chains = partition.getEntryChains();
+        Column[] c = {
+            new Column("Cluster Index", int.class, EntryChain::getHead),
+            new Column("Size (KB)", long.class, e -> e.length() * partition.getBootSector().getBytesPerCluster() >> 10),
+            new Column("Type", String.class, e -> Optional.ofNullable(types.get(e.getHead())).orElseGet(() -> tryGuessAndCacheType(e)))
+        };
+        this.columns = c;
     }
 
     @Override
@@ -27,47 +47,28 @@ public class FatTableModel extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return 3;
+        return columns.length;
     }
 
     @Override
-    public String getColumnName(int column) {
-        switch(column) {
-            case 0: return "Cluster Index";
-            case 1: return "Size (KB)";
-            case 2: return "Type";
-            default: return "?";
-        }
+    public String getColumnName(int columnIndex) {
+        return columns[columnIndex].title;
     }
 
     @Override
     public Class<?> getColumnClass(int columnIndex) {
-        switch(columnIndex) {
-            case 0: return int.class;
-            case 1: return long.class;
-            case 2: return String.class;
-            default: return Object.class;
-        }
+        return columns[columnIndex].type;
     }
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        try {
-            switch(columnIndex) {
-                case 0: return chains.get(rowIndex).getHead();
-                case 1: return chains.get(rowIndex).length() * partition.getBootSector().getBytesPerCluster() >> 10;
-                case 2: return Optional.ofNullable(types.get(rowIndex)).orElseGet(() -> tryGuessAndCacheType(rowIndex));
-                default: return "?";
-            }
-        } catch (IOException ex) {
-            return "<error>";
-        }
+        return columns[columnIndex].value.apply(chains.get(rowIndex));
     }
 
-    private String tryGuessAndCacheType(int rowIndex) {
+    private String tryGuessAndCacheType(EntryChain entry) {
         try {
-            String type = partition.guessEntryType(chains.get(rowIndex));
-            types.put(rowIndex, type);
+            String type = partition.guessEntryType(entry);
+            types.put(entry.getHead(), type);
             return type;
         } catch (IOException ex) {
             return ex.toString();

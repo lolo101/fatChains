@@ -2,30 +2,39 @@ package fr.lbroquet.fatchains;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.List;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
-public class FatEntries implements Iterable<FatEntry> {
+public class FatEntries {
 
-    private final ByteBuffer buffer;
+    private final SortedMap<Integer, FatEntry> allocateds = new TreeMap<>();
+    private final Collection<Integer> pointedAt = new TreeSet<>();
 
     FatEntries(ByteBuffer buffer) {
-        this.buffer = buffer;
-    }
-
-    @Override
-    public Iterator<FatEntry> iterator() {
-        return new FatEntryIterator(buffer.duplicate().order(ByteOrder.LITTLE_ENDIAN).rewind());
-    }
-
-    public Stream<FatEntry> stream() {
-        return StreamSupport.stream(spliterator(), false);
+        for (FatEntryIterator fatEntryIterator = new FatEntryIterator(buffer.order(ByteOrder.LITTLE_ENDIAN).rewind()); fatEntryIterator.hasNext();) {
+            FatEntry entry = fatEntryIterator.next();
+            allocateds.put(entry.getIndex(), entry);
+            pointedAt.add(entry.getNextEntryIndex());
+        }
     }
 
     public List<EntryChain> getChains() {
-        EntryHeads heads = stream().skip(2).reduce(new EntryHeads(), EntryHeads::consider, EntryHeads::merge);
-        return heads.chains();
+        return allocateds.values().stream()
+                .skip(2)
+                .filter(this::notPointedAt)
+                .map(this::toEntryChain)
+                .collect(Collectors.toList());
+    }
+
+    private boolean notPointedAt(FatEntry e) {
+        return !pointedAt.contains(e.getIndex());
+    }
+
+    private EntryChain toEntryChain(FatEntry e) {
+        return new EntryChain(e.getIndex(), allocateds);
     }
 }

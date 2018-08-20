@@ -20,7 +20,7 @@ class FatPanel extends Panel {
         model = table.getTableModel();
     }
 
-    void init() throws IOException {
+    void init() {
         partition.getEntryChains().stream().filter(EntryChain::isFinished).forEach(this::addRow);
         addComponent(new Label(String.format("%s chains found", model.getRowCount())));
         addComponent(table);
@@ -36,11 +36,7 @@ class FatPanel extends Panel {
     }
 
     private long asSizeKb(long length) {
-        try {
-            return (length * partition.getBootSector().getBytesPerCluster()) >> 10;
-        } catch (IOException ex) {
-            return 0;
-        }
+        return (length * partition.getBootSector().getBytesPerCluster()) >> 10;
     }
 
     private String tryGuessFileType(EntryChain chain) {

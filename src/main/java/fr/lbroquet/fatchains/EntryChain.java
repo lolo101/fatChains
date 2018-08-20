@@ -7,22 +7,16 @@ import java.util.stream.Stream;
 
 public class EntryChain {
 
-    private final int head;
     private final List<FatEntry> chain = new ArrayList<>();
 
     EntryChain(int head, SortedMap<Integer, FatEntry> entries) {
-        this.head = head;
-        buildEntryList(entries);
-    }
-
-    private void buildEntryList(SortedMap<Integer, FatEntry> entries) {
-        for (int next = head; entries.containsKey(next) ; next = entries.get(next).getNextEntryIndex()) {
-            chain.add(entries.get(next));
+        for (int index = head; entries.containsKey(index) ; index = entries.get(index).getNextEntryIndex()) {
+            chain.add(entries.get(index));
         }
     }
 
     public int getHead() {
-        return head;
+        return chain.get(0).getIndex();
     }
 
     public Stream<FatEntry> stream() {
