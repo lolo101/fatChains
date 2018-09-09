@@ -64,14 +64,14 @@ public class Partition implements Closeable {
             BootSector bootSector = getBootSector();
             ByteBuffer buffer = ByteBuffer.allocate((int) bootSector.getFatLengthInBytes());
             readChannel(bootSector.getFatOffsetInBytes(), buffer);
-            entryChains = new FatEntries(buffer).getChains();
+            entryChains = new FatEntries(this, buffer).getChains();
             return entryChains;
         } catch (IOException ex) {
             throw new UncheckedIOException(ex);
         }
     }
 
-    public String guessEntryType(EntryChain chain) throws IOException {
+    String guessEntryType(EntryChain chain) throws IOException {
         ByteBuffer buffer = ByteBuffer.allocate(BYTES_PER_SECTOR);
         readChannel(getHeadClusterPosition(chain), buffer);
         return EntryType.searchSignature(buffer.array());
@@ -79,8 +79,7 @@ public class Partition implements Closeable {
 
     private long getHeadClusterPosition(EntryChain chain) {
         BootSector bootSector = getBootSector();
-        final int headOffset = chain.getHead() - 2;
-        return bootSector.getClusterOffsetInBytes() + headOffset * bootSector.getBytesPerCluster();
+        return bootSector.getClusterOffsetInBytes() + chain.getClusterIndex() * bootSector.getBytesPerCluster();
     }
 
     private void readChannel(long position, ByteBuffer buffer) throws IOException {

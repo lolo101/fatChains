@@ -6,7 +6,6 @@ import com.googlecode.lanterna.gui2.table.Table;
 import com.googlecode.lanterna.gui2.table.TableModel;
 import fr.lbroquet.fatchains.EntryChain;
 import fr.lbroquet.fatchains.Partition;
-import java.io.IOException;
 
 class FatPanel extends Panel {
 
@@ -16,7 +15,7 @@ class FatPanel extends Panel {
 
     public FatPanel(Partition partition) {
         this.partition = partition;
-        table = new Table("Index", "Size in clusters", "Size in KB", "Finished", "Type");
+        table = new Table("Cluster Index", "Size in clusters", "Size in KB", "Finished", "Type");
         model = table.getTableModel();
     }
 
@@ -27,12 +26,12 @@ class FatPanel extends Panel {
     }
 
     private void addRow(EntryChain chain) {
-        int head = chain.getHead();
+        int clusterIndex = chain.getClusterIndex();
         long length = chain.length();
         long sizeKb = asSizeKb(length);
         boolean finished = chain.isFinished();
         String type = tryGuessFileType(chain);
-        model.addRow(head, length, sizeKb, finished, type);
+        model.addRow(clusterIndex, length, sizeKb, finished, type);
     }
 
     private long asSizeKb(long length) {
@@ -40,10 +39,6 @@ class FatPanel extends Panel {
     }
 
     private String tryGuessFileType(EntryChain chain) {
-        try {
-            return partition.guessEntryType(chain);
-        } catch (IOException ex) {
-            return "<error>";
-        }
+        return chain.getType();
     }
 }

@@ -13,6 +13,6 @@ public class FatFile {
     }
 
     public List<EntryChain> readChains() {
-        return new FatEntries(buffer.getBuffer()).getChains();
+        return new FatEntries(null, buffer.getBuffer()).getChains();
     }
 }

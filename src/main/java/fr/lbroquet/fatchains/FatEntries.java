@@ -11,10 +11,12 @@ import java.util.stream.Collectors;
 
 public class FatEntries {
 
+    private final Partition partition;
     private final SortedMap<Integer, FatEntry> allocateds = new TreeMap<>();
     private final Collection<Integer> pointedAt = new TreeSet<>();
 
-    FatEntries(ByteBuffer buffer) {
+    FatEntries(Partition partition, ByteBuffer buffer) {
+        this.partition = partition;
         for (FatEntryIterator fatEntryIterator = new FatEntryIterator(buffer.order(ByteOrder.LITTLE_ENDIAN).rewind()); fatEntryIterator.hasNext();) {
             FatEntry entry = fatEntryIterator.next();
             allocateds.put(entry.getIndex(), entry);
@@ -35,6 +37,6 @@ public class FatEntries {
     }
 
     private EntryChain toEntryChain(FatEntry e) {
-        return new EntryChain(e.getIndex(), allocateds);
+        return new EntryChain(partition, e.getIndex(), allocateds);
     }
 }
