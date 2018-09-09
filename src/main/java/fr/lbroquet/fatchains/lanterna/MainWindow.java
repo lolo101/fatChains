@@ -2,6 +2,7 @@ package fr.lbroquet.fatchains.lanterna;
 
 import com.googlecode.lanterna.gui2.AbstractWindow;
 import com.googlecode.lanterna.gui2.Button;
+import com.googlecode.lanterna.gui2.Component;
 import com.googlecode.lanterna.gui2.Direction;
 import com.googlecode.lanterna.gui2.LinearLayout;
 import com.googlecode.lanterna.gui2.Panel;
@@ -9,6 +10,7 @@ import com.googlecode.lanterna.gui2.WindowBasedTextGUI;
 import com.googlecode.lanterna.gui2.dialogs.WaitingDialog;
 import fr.lbroquet.fatchains.Partition;
 import java.io.IOException;
+import java.util.function.Supplier;
 
 class MainWindow extends AbstractWindow {
 
@@ -22,8 +24,8 @@ class MainWindow extends AbstractWindow {
         this.partition = partition;
 
         Panel menuPanel = new Panel();
-        menuPanel.addComponent(new Button("Boot Sector", this::scanBootSector));
-        menuPanel.addComponent(new Button("FAT", this::scanFat));
+        menuPanel.addComponent(new Button("Boot Sector", () -> waitShow(this::bootSector)));
+        menuPanel.addComponent(new Button("FAT", () -> waitShow(this::fat)));
 
         mainPanel.addComponent(menuPanel);
 
@@ -33,39 +35,29 @@ class MainWindow extends AbstractWindow {
         setComponent(panel);
     }
 
-    private void scanBootSector() {
+    private void waitShow(Supplier<Component> supplier) {
+        WindowBasedTextGUI gui = getTextGUI();
+        WaitingDialog dialog = WaitingDialog.showDialog(gui, partition.getFileName(), "Reading boot sector\nPlease wait...");
         try {
-            WindowBasedTextGUI gui = getTextGUI();
-            WaitingDialog dialog = WaitingDialog.showDialog(gui, partition.getFileName(), "Reading boot sector\nPlease wait...");
             gui.updateScreen();
-            showBootSector();
-            dialog.close();
+            Component c = supplier.get();
+            mainPanel.addComponent(c);
         } catch (IOException ex) {
             LOG.log(System.Logger.Level.ERROR, "", ex);
+        } finally {
+            dialog.close();
         }
     }
 
-    private void showBootSector() {
+    private Component bootSector() {
         BootSectorPanel bootSectorPanel = new BootSectorPanel();
         bootSectorPanel.init(partition.getBootSector());
-        mainPanel.addComponent(bootSectorPanel);
+        return bootSectorPanel;
     }
 
-    private void scanFat() {
-        try {
-            WindowBasedTextGUI gui = getTextGUI();
-            WaitingDialog dialog = WaitingDialog.showDialog(gui, partition.getFileName(), "Reading FAT\nPlease wait...");
-            gui.updateScreen();
-            showFat();
-            dialog.close();
-        } catch (IOException ex) {
-            LOG.log(System.Logger.Level.ERROR, "", ex);
-        }
-    }
-
-    private void showFat() {
+    private Component fat() {
         FatPanel fatPanel = new FatPanel(partition);
         fatPanel.init();
-        mainPanel.addComponent(fatPanel);
+        return fatPanel;
     }
 }
