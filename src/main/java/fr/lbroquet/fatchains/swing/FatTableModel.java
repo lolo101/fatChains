@@ -20,12 +20,10 @@ public class FatTableModel extends AbstractTableModel {
         }
     }
 
-    private final Partition partition;
     private final List<EntryChain> chains;
     private final Column[] columns;
 
     FatTableModel(Partition partition) {
-        this.partition = partition;
         this.chains = partition.getEntryChains();
         Column[] c = {
             new Column("Cluster Index", int.class, EntryChain::getClusterIndex),
@@ -58,9 +56,5 @@ public class FatTableModel extends AbstractTableModel {
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         return columns[columnIndex].value.apply(chains.get(rowIndex));
-    }
-
-    private String tryGuessAndCacheType(EntryChain entry) {
-        return entry.getType();
     }
 }

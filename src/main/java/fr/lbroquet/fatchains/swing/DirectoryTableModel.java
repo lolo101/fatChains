@@ -2,7 +2,6 @@ package fr.lbroquet.fatchains.swing;
 
 import fr.lbroquet.fatchains.EntryChain;
 import fr.lbroquet.fatchains.Partition;
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.swing.table.AbstractTableModel;
@@ -11,7 +10,7 @@ public class DirectoryTableModel extends AbstractTableModel {
 
     private final List<EntryChain> chains;
 
-    public DirectoryTableModel(Partition partition) throws IOException {
+    public DirectoryTableModel(Partition partition) {
         chains = partition.getEntryChains().stream().filter(this::isFileDirectory).collect(Collectors.toList());
     }
 
