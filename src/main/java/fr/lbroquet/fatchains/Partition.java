@@ -48,7 +48,7 @@ public class Partition implements Closeable {
             ByteBuffer buffer = ByteBuffer.allocate(BYTES_PER_SECTOR);
             buffer.order(ByteOrder.LITTLE_ENDIAN);
             readChannel(0, buffer);
-            bootSector = new BootSector(buffer.rewind());
+            bootSector = new BootSector(buffer);
             return bootSector;
         } catch (IOException ex) {
             throw new UncheckedIOException(ex);

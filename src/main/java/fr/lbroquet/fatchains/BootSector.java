@@ -1,11 +1,15 @@
 package fr.lbroquet.fatchains;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import lombok.Value;
 
 @Value
 public class BootSector {
+
+    private static final byte[] VALID_SIGNATURE = {0x55, -0x56};
 
     final byte[] jmp = new byte[3];
     final byte[] name = new byte[8];
@@ -25,7 +29,8 @@ public class BootSector {
     final byte driveSelect;
     final byte pctUse;
 
-    BootSector(ByteBuffer buffer) {
+    BootSector(ByteBuffer buffer) throws IOException {
+        validityCheck(buffer);
         buffer.get(jmp);
         buffer.get(name);
         buffer.position(64);
@@ -44,6 +49,16 @@ public class BootSector {
         nbFats = buffer.get();
         driveSelect = buffer.get();
         pctUse = buffer.get();
+    }
+
+    private void validityCheck(ByteBuffer buffer) throws IOException {
+        byte[] signature = new byte[2];
+        buffer.position(510);
+        buffer.get(signature);
+        buffer.position(0);
+        if (!Arrays.equals(signature, VALID_SIGNATURE)) {
+            throw new IOException(String.format("Invalid Signature %02x %02x", signature[0], signature[1]));
+        }
     }
 
     public String getName() {
