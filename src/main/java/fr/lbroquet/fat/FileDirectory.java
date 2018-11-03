@@ -12,31 +12,8 @@ public class FileDirectory {
 
     public FileDirectory(ByteBuffer buffer) {
         while (buffer.hasRemaining() && buffer.get(buffer.position()) != 0) {
-            files.add(readSingleFile(buffer.order(ByteOrder.LITTLE_ENDIAN)));
+            files.add(new File(buffer.order(ByteOrder.LITTLE_ENDIAN)));
         }
-    }
-
-    private File readSingleFile(ByteBuffer buffer) {
-        FileDirectoryEntry fileDirectoryEntry = new FileDirectoryEntry(buffer);
-        StreamExtension streamExtension = new StreamExtension(buffer);
-
-        String fileName = readFileName(buffer,
-                fileDirectoryEntry.getSecondaryCount() - 1,
-                streamExtension.getNameLength());
-
-        return new File(fileName,
-                streamExtension.getFirstCluster(),
-                streamExtension.getValidDataLength());
-    }
-
-    private String readFileName(ByteBuffer buffer, int count, int nameLength) {
-        return Stream.generate(() -> buffer)
-                .limit(count)
-                .map(FileNameDirectoryEntry::new)
-                .map(FileNameDirectoryEntry::getFileNameFragment)
-                .reduce(String::concat)
-                .map(s -> s.substring(0, nameLength))
-                .get();
     }
 
     public Stream<File> stream() {
