@@ -6,14 +6,13 @@ import java.util.stream.Stream;
 public class File {
 
     private final String fileName;
+    private final FileDirectoryEntry fileDirectoryEntry;
+    private final StreamExtension streamExtension;
 
     File(ByteBuffer buffer) {
-        FileDirectoryEntry fileDirectoryEntry = new FileDirectoryEntry(buffer);
-        StreamExtension streamExtension = new StreamExtension(buffer);
-
-        this.fileName = readFileName(buffer,
-                fileDirectoryEntry.getSecondaryCount() - 1,
-                streamExtension.getNameLength());
+        this.fileDirectoryEntry = new FileDirectoryEntry(buffer);
+        this.streamExtension = new StreamExtension(buffer);
+        this.fileName = readFileName(buffer);
     }
 
     @Override
@@ -21,7 +20,9 @@ public class File {
         return fileName;
     }
 
-    private String readFileName(ByteBuffer buffer, int count, int nameLength) {
+    private String readFileName(ByteBuffer buffer) {
+        int count = fileDirectoryEntry.getSecondaryCount() - 1;
+        int nameLength = streamExtension.getNameLength();
         return Stream.generate(() -> buffer)
                 .limit(count)
                 .map(FileNameDirectoryEntry::new)
