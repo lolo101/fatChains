@@ -25,71 +25,58 @@ public class Partition implements Closeable {
     private static final System.Logger LOG = System.getLogger(Partition.class.getName());
     private static final int BYTES_PER_SECTOR = 512;
 
-    private final Path path;
     private final FileChannel channel;
     private BootSector bootSector;
     private List<EntryChain> entryChains;
 
     public Partition(Path path) throws IOException {
-        this.path = path;
         this.channel = FileChannel.open(path, StandardOpenOption.READ);
-    }
-
-    public String getFileName() {
-        return path.getFileName().toString();
     }
 
     public BootSector getBootSector() {
         return Optional.ofNullable(bootSector).orElseGet(() -> readAndCacheBootSector());
     }
 
-    private BootSector readAndCacheBootSector() {
-        try {
-            ByteBuffer buffer = ByteBuffer.allocate(BYTES_PER_SECTOR);
-            buffer.order(ByteOrder.LITTLE_ENDIAN);
-            readChannel(0, buffer);
-            bootSector = new BootSector(buffer);
-            return bootSector;
-        } catch (IOException ex) {
-            throw new UncheckedIOException(ex);
-        }
-    }
-
     public List<EntryChain> getEntryChains() {
         return Optional.ofNullable(entryChains).orElseGet(() -> readAndCacheEntryChains());
     }
 
-    private List<EntryChain> readAndCacheEntryChains() {
-        try {
-            BootSector bootSector = getBootSector();
-            ByteBuffer buffer = ByteBuffer.allocate((int) bootSector.getFatLengthInBytes());
-            readChannel(bootSector.getFatOffsetInBytes(), buffer);
-            entryChains = new FatEntries(this, buffer).getChains();
-            return entryChains;
-        } catch (IOException ex) {
-            throw new UncheckedIOException(ex);
-        }
-    }
-
-    String guessEntryType(EntryChain chain) throws IOException {
-        ByteBuffer buffer = ByteBuffer.allocate(BYTES_PER_SECTOR);
-        readChannel(getHeadClusterPosition(chain), buffer);
-        return EntryType.searchSignature(buffer.array());
-    }
-
-    private long getHeadClusterPosition(EntryChain chain) {
+    public ByteBuffer readCluster(FatEntry entry) {
         BootSector bootSector = getBootSector();
-        return bootSector.getClusterOffsetInBytes() + chain.getClusterIndex() * bootSector.getBytesPerCluster();
-    }
-
-    private void readChannel(long position, ByteBuffer buffer) throws IOException {
-        LOG.log(System.Logger.Level.INFO, "Reading {0} bytes from {1} @{2}", buffer.remaining(), path, position);
-        channel.position(position);
-        channel.read(buffer);
+        long position = bootSector.getClusterPosition(entry);
+        ByteBuffer buffer = ByteBuffer.allocate((int) bootSector.getBytesPerCluster());
+        readChannel(position, buffer);
+        return buffer.rewind();
     }
 
     @Override
     public void close() throws IOException {
         channel.close();
+    }
+
+    private BootSector readAndCacheBootSector() {
+        ByteBuffer buffer = ByteBuffer.allocate(BYTES_PER_SECTOR);
+        buffer.order(ByteOrder.LITTLE_ENDIAN);
+        readChannel(0, buffer);
+        bootSector = new BootSector(buffer);
+        return bootSector;
+    }
+
+    private List<EntryChain> readAndCacheEntryChains() {
+        BootSector bootSector = getBootSector();
+        ByteBuffer buffer = ByteBuffer.allocate((int) bootSector.getFatLengthInBytes());
+        readChannel(bootSector.getFatOffsetInBytes(), buffer);
+        entryChains = new FatEntries(this, buffer).getChains();
+        return entryChains;
+    }
+
+    private void readChannel(long position, ByteBuffer buffer) {
+        try {
+            LOG.log(System.Logger.Level.INFO, "Reading {0} bytes @{1}", buffer.remaining(), position);
+            channel.position(position);
+            channel.read(buffer);
+        } catch (IOException ex) {
+            throw new UncheckedIOException(ex);
+        }
     }
 }

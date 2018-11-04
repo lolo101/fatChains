@@ -26,7 +26,7 @@ public class FatTableModel extends AbstractTableModel {
     FatTableModel(Partition partition) {
         this.chains = partition.getEntryChains();
         Column[] c = {
-            new Column("Cluster Index", int.class, EntryChain::getClusterIndex),
+            new Column("Entry Index", int.class, EntryChain::getHeadEntryIndex),
             new Column("Size (KB)", long.class, e -> e.length() * partition.getBootSector().getBytesPerCluster() >> 10),
             new Column("Type", String.class, EntryChain::getType)
         };

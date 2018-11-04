@@ -1,6 +1,5 @@
 package fr.lbroquet.fatchains;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Arrays;
@@ -29,7 +28,7 @@ public class BootSector {
     final byte driveSelect;
     final byte pctUse;
 
-    BootSector(ByteBuffer buffer) throws IOException {
+    BootSector(ByteBuffer buffer) {
         validityCheck(buffer);
         buffer.get(jmp);
         buffer.get(name);
@@ -49,16 +48,6 @@ public class BootSector {
         nbFats = buffer.get();
         driveSelect = buffer.get();
         pctUse = buffer.get();
-    }
-
-    private void validityCheck(ByteBuffer buffer) throws IOException {
-        byte[] signature = new byte[2];
-        buffer.position(510);
-        buffer.get(signature);
-        buffer.position(0);
-        if (!Arrays.equals(signature, VALID_SIGNATURE)) {
-            throw new IOException(String.format("Invalid Signature %02x %02x", signature[0], signature[1]));
-        }
     }
 
     public String getName() {
@@ -91,5 +80,20 @@ public class BootSector {
 
     public long getClusterOffsetInBytes() {
         return clusterOffset << bytesPerSectorExposant;
+    }
+
+    public long getClusterPosition(FatEntry entry) {
+        int clusterIndex = entry.getIndex() - 2;
+        return getClusterOffsetInBytes() + clusterIndex * getBytesPerCluster();
+    }
+
+    private void validityCheck(ByteBuffer buffer) {
+        byte[] signature = new byte[2];
+        buffer.position(510);
+        buffer.get(signature);
+        buffer.position(0);
+        if (!Arrays.equals(signature, VALID_SIGNATURE)) {
+            throw new RuntimeException(String.format("Invalid Signature %02x %02x", signature[0], signature[1]));
+        }
     }
 }

@@ -37,7 +37,7 @@ class MainWindow extends AbstractWindow {
 
     private void waitShow(Supplier<Component> supplier) {
         WindowBasedTextGUI gui = getTextGUI();
-        WaitingDialog dialog = WaitingDialog.showDialog(gui, partition.getFileName(), "Reading boot sector\nPlease wait...");
+        WaitingDialog dialog = WaitingDialog.showDialog(gui, "", "Reading boot sector\nPlease wait...");
         try {
             gui.updateScreen();
             Component c = supplier.get();

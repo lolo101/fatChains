@@ -1,20 +1,37 @@
 package fr.lbroquet.fatchains.swing;
 
 import fr.lbroquet.fatchains.Partition;
+import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.nio.file.Path;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JComponent;
 import javax.swing.table.TableModel;
+import javax.swing.tree.TreeModel;
 
 public class MainFrame extends javax.swing.JFrame {
 
     private final Partition partition;
     private final TableModel fatTableModel;
-    private final TableModel directoryTableModel;
+    private final TreeModel directoryTreeModel;
+    private final Action fatAction = new AbstractAction() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            updateCenterPanel(fatTable);
+        }
+    };
+    private final Action dirsAction = new AbstractAction() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            updateCenterPanel(directoryTree);
+        }
+    };
 
     public MainFrame(Path path) throws IOException {
         this.partition = new Partition(path);
         this.fatTableModel = new FatTableModel(partition);
-        this.directoryTableModel = new DirectoryTableModel(partition);
+        this.directoryTreeModel = new DirectoryTreeModel(partition);
         initComponents();
     }
 
@@ -27,12 +44,19 @@ public class MainFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        javax.swing.JPanel centerPanel = new javax.swing.JPanel();
-        javax.swing.JTabbedPane tabbedPane = new javax.swing.JTabbedPane();
-        javax.swing.JScrollPane scrollPane = new javax.swing.JScrollPane();
         fatTable = new javax.swing.JTable();
-        javax.swing.JScrollPane jScrollPane1 = new javax.swing.JScrollPane();
-        directoryTable = new javax.swing.JTable();
+        directoryTree = new javax.swing.JTree();
+        javax.swing.JToolBar mainToolBar = new javax.swing.JToolBar();
+        javax.swing.JButton fatButton = new javax.swing.JButton();
+        javax.swing.JButton directoryButton = new javax.swing.JButton();
+        javax.swing.JPanel centerPanel = new javax.swing.JPanel();
+        centerScroll = new javax.swing.JScrollPane();
+
+        fatTable.setAutoCreateRowSorter(true);
+        fatTable.setModel(fatTableModel);
+
+        directoryTree.setModel(directoryTreeModel);
+        directoryTree.setRootVisible(false);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("FAT Table");
@@ -42,20 +66,26 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
+        mainToolBar.setRollover(true);
+
+        fatButton.setAction(fatAction);
+        fatButton.setText("FAT");
+        fatButton.setFocusable(false);
+        fatButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        fatButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        mainToolBar.add(fatButton);
+
+        directoryButton.setAction(dirsAction);
+        directoryButton.setText("DIRs");
+        directoryButton.setFocusable(false);
+        directoryButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        directoryButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        mainToolBar.add(directoryButton);
+
+        getContentPane().add(mainToolBar, java.awt.BorderLayout.PAGE_START);
+
         centerPanel.setLayout(new java.awt.BorderLayout());
-
-        fatTable.setAutoCreateRowSorter(true);
-        fatTable.setModel(fatTableModel);
-        scrollPane.setViewportView(fatTable);
-
-        tabbedPane.addTab("FAT Table", scrollPane);
-
-        directoryTable.setModel(directoryTableModel);
-        jScrollPane1.setViewportView(directoryTable);
-
-        tabbedPane.addTab("Directories", jScrollPane1);
-
-        centerPanel.add(tabbedPane, java.awt.BorderLayout.CENTER);
+        centerPanel.add(centerScroll, java.awt.BorderLayout.CENTER);
 
         getContentPane().add(centerPanel, java.awt.BorderLayout.CENTER);
 
@@ -70,8 +100,14 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_formWindowClosing
 
+    private void updateCenterPanel(JComponent panel) {
+        centerScroll.setViewportView(panel);
+        pack();
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTable directoryTable;
+    private javax.swing.JScrollPane centerScroll;
+    private javax.swing.JTree directoryTree;
     private javax.swing.JTable fatTable;
     // End of variables declaration//GEN-END:variables
 }

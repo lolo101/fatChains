@@ -62,4 +62,12 @@ public class BootSectorTest {
     public void should_convert_clusterOffsetInBytes() throws Exception {
         Assert.assertEquals(Math.multiplyExact(bootSector.getBytesPerSector(), bootSector.getClusterOffset()), bootSector.getClusterOffsetInBytes());
     }
+
+    @Test
+    public void should_calculate_clusterPositionInBytes() throws Exception {
+        for (int clusterIndex = 0; clusterIndex < 10; ++clusterIndex) {
+            FatEntry entry = new FatEntry(clusterIndex + 2, FatEntry.END_OF_CHAIN);
+            Assert.assertEquals(bootSector.getClusterOffsetInBytes() + clusterIndex * bootSector.getBytesPerCluster(), bootSector.getClusterPosition(entry));
+        }
+    }
 }

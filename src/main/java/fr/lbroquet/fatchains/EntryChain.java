@@ -1,7 +1,6 @@
 package fr.lbroquet.fatchains;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -21,8 +20,8 @@ public class EntryChain {
         }
     }
 
-    public int getClusterIndex() {
-        return chain.get(0).getIndex() - 2;
+    public int getHeadEntryIndex() {
+        return chain.get(0).getIndex();
     }
 
     public Stream<FatEntry> stream() {
@@ -42,11 +41,8 @@ public class EntryChain {
     }
 
     private String getAndCacheType() {
-        try {
-            type = partition.guessEntryType(this);
-            return type;
-        } catch (IOException ex) {
-            throw new UncheckedIOException(ex);
-        }
+        ByteBuffer cluster = partition.readCluster(chain.get(0));
+        type = EntryType.searchSignature(cluster.array());
+        return type;
     }
 }

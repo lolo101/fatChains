@@ -15,7 +15,7 @@ class FatPanel extends Panel {
 
     public FatPanel(Partition partition) {
         this.partition = partition;
-        table = new Table("Cluster Index", "Size in clusters", "Size in KB", "Finished", "Type");
+        table = new Table("Entry Index", "Size in clusters", "Size in KB", "Finished", "Type");
         model = table.getTableModel();
     }
 
@@ -26,12 +26,12 @@ class FatPanel extends Panel {
     }
 
     private void addRow(EntryChain chain) {
-        int clusterIndex = chain.getClusterIndex();
+        int entryIndex = chain.getHeadEntryIndex();
         long length = chain.length();
         long sizeKb = asSizeKb(length);
         boolean finished = chain.isFinished();
         String type = tryGuessFileType(chain);
-        model.addRow(clusterIndex, length, sizeKb, finished, type);
+        model.addRow(entryIndex, length, sizeKb, finished, type);
     }
 
     private long asSizeKb(long length) {
