@@ -21,7 +21,7 @@ public class File {
     }
 
     private String readFileName(ByteBuffer buffer) {
-        int count = fileDirectoryEntry.getSecondaryCount() - 1;
+        int count = fileDirectoryEntry.countFileNameEntries();
         int nameLength = streamExtension.getNameLength();
         return Stream.generate(() -> buffer)
                 .limit(count)

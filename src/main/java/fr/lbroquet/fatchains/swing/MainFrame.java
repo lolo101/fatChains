@@ -102,7 +102,6 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void updateCenterPanel(JComponent panel) {
         centerScroll.setViewportView(panel);
-        pack();
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

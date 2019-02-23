@@ -1,9 +1,11 @@
 package fr.lbroquet.fat;
 
 import java.nio.ByteBuffer;
-import lombok.Value;
 
-@Value
+/**
+ * 32-bits data structure holding file attributes.
+ * @author loic
+ */
 public class FileDirectoryEntry {
 
     private final byte secondaryCount;
@@ -38,5 +40,9 @@ public class FileDirectoryEntry {
         byte accessTZ = buffer.get();
 
         buffer.position(buffer.position() + 12);
+    }
+
+    public int countFileNameEntries() {
+        return secondaryCount - 1;
     }
 }

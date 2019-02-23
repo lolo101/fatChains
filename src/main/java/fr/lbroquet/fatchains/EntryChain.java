@@ -2,12 +2,13 @@ package fr.lbroquet.fatchains;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.SortedMap;
 import java.util.stream.Stream;
 
-public class EntryChain {
+public class EntryChain implements Iterable<ByteBuffer> {
 
     private final Partition partition;
     private final List<FatEntry> chain = new ArrayList<>();
@@ -38,6 +39,24 @@ public class EntryChain {
 
     public String getType() {
         return Optional.ofNullable(type).orElseGet(() -> getAndCacheType());
+    }
+
+    @Override
+    public Iterator<ByteBuffer> iterator() {
+        return new Iterator<ByteBuffer>() {
+
+            private final Iterator<FatEntry> internal = chain.iterator();
+
+            @Override
+            public boolean hasNext() {
+                return internal.hasNext();
+            }
+
+            @Override
+            public ByteBuffer next() {
+                return partition.readCluster(internal.next());
+            }
+        };
     }
 
     private String getAndCacheType() {

@@ -4,6 +4,10 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import lombok.Value;
 
+/**
+ * 32-bits data structure holding a fragment of the file name.
+ * @author loic
+ */
 @Value
 public class FileNameDirectoryEntry {
 

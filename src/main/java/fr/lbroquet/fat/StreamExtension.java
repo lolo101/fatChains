@@ -3,6 +3,10 @@ package fr.lbroquet.fat;
 import java.nio.ByteBuffer;
 import lombok.Value;
 
+/**
+ * 32-bits data structure holding metadata about file name and content.
+ * @author loic
+ */
 @Value
 public class StreamExtension {
 
