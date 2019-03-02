@@ -7,6 +7,8 @@ import org.junit.Test;
 
 public class EntryChainTest {
 
+    private static final int CLUSTER_SIZE = 512 * 256;
+
     @Test
     public void should_detect_unfinished() throws Exception {
         List<EntryChain> chains = new FatFile("/unfinished.bin").readChains();
@@ -19,4 +21,9 @@ public class EntryChainTest {
         Assert.assertEquals(3, chains.get(0).length());
     }
 
+    @Test
+    public void should_calculate_correct_size() throws Exception {
+        List<EntryChain> chains = new FatFile("/unordered_singlechain.bin").readChains();
+        Assert.assertEquals(3 * CLUSTER_SIZE, chains.get(0).getSizeInBytes());
+    }
 }

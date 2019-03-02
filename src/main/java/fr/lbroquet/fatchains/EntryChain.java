@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.SortedMap;
-import java.util.stream.Stream;
 
 public class EntryChain implements Iterable<ByteBuffer> {
 
@@ -23,10 +22,6 @@ public class EntryChain implements Iterable<ByteBuffer> {
 
     public int getHeadEntryIndex() {
         return chain.get(0).getIndex();
-    }
-
-    public Stream<FatEntry> stream() {
-        return chain.stream();
     }
 
     public boolean isFinished() {
