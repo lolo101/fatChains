@@ -1,7 +1,6 @@
 package fr.lbroquet.fatchains.swing;
 
 import fr.lbroquet.fatchains.EntryChain;
-import fr.lbroquet.fatchains.Partition;
 import java.util.List;
 import java.util.function.Function;
 import javax.swing.table.AbstractTableModel;
@@ -23,15 +22,16 @@ public class FatTableModel extends AbstractTableModel {
     private final List<EntryChain> chains;
     private final Column[] columns;
 
-    FatTableModel(Partition partition) {
-        this.chains = partition.getEntryChains();
+    FatTableModel(List<EntryChain> chains) {
+        this.chains = chains;
         Column[] c = {
             new Column("Entry Index", int.class, EntryChain::getHeadEntryIndex),
-            new Column("Size (KB)", long.class, e -> e.length() * partition.getBootSector().getBytesPerCluster() >> 10),
+            new Column("Size (KB)", long.class, e -> e.getSizeInBytes() >> 10),
             new Column("Type", String.class, EntryChain::getType)
         };
         this.columns = c;
     }
+
 
     @Override
     public int getRowCount() {

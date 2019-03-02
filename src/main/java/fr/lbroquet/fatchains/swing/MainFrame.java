@@ -30,7 +30,7 @@ public class MainFrame extends javax.swing.JFrame {
 
     public MainFrame(Path path) throws IOException {
         this.partition = new Partition(path);
-        this.fatTableModel = new FatTableModel(partition);
+        this.fatTableModel = new FatTableModel(partition.getEntryChains());
         this.directoryTreeModel = new DirectoryTreeModel(partition);
         initComponents();
     }

@@ -37,6 +37,10 @@ public class EntryChain implements Iterable<ByteBuffer> {
         return chain.size();
     }
 
+    public long getSizeInBytes() {
+        return length() * partition.getBootSector().getBytesPerCluster();
+    }
+
     public String getType() {
         return Optional.ofNullable(type).orElseGet(() -> getAndCacheType());
     }
